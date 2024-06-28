@@ -1,8 +1,11 @@
 use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenvy::dotenv;
 use env_logger::Env;
+use ipdf::controllers::pdf;
 use log::info;
 use std::env;
+
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -15,11 +18,11 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         info!("Starting server on port {}", port);
+        let api = web::scope("/api").service(pdf::routes());
         App::new()
             // .app_data(Data::new(pool.clone()))
-            // .service(users::routes())
             .wrap(Logger::default())
-            // .service(videos::routes())
+            .service(api)
             .service(web::scope("").service(home_page))
     })
     .bind(("0.0.0.0", port))?
@@ -29,5 +32,17 @@ async fn main() -> std::io::Result<()> {
 
 #[get("/")]
 pub async fn home_page() -> impl Responder {
-    HttpResponse::Ok().body("Welcome to the home page!")
+    HttpResponse::Ok().content_type("text/html").body(
+        r#"
+        <html>
+            <head>
+                <title>IPDF API</title>
+            </head>
+            <body>
+                <h1>IPDF API</h1>
+                <p>Welcome to the IPDF API. This is a simple API that allows you to build PDFs.</p>
+            </body>
+        </html>
+        "#,
+    )
 }
