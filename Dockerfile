@@ -17,7 +17,7 @@ RUN cargo build --release
 FROM debian:12.2 as production
 ENV STAGE=production
 WORKDIR /app
-RUN mkdir -p /app/temp
 COPY --from=builder /app/target/release/ipdf .
+COPY --from=builder /app/libs /app/libs
 CMD ["./ipdf"]
 
