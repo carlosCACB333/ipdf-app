@@ -9,13 +9,13 @@ struct UploadForm {
     files: Vec<TempFile>,
 }
 
-#[post("/join")]
-pub async fn join_pdfs(
+#[post("/merge")]
+pub async fn merge_pdfs(
     MultipartForm(form): MultipartForm<UploadForm>,
 ) -> Result<impl Responder, Error> {
     let paths = form.files.iter().map(|file| file.file.path()).collect();
 
-    let merged = pdf::join_pdfs(paths).unwrap();
+    let merged = pdf::merge_pdfs(paths).unwrap();
 
     let response = HttpResponse::Ok()
         .content_type("application/pdf")

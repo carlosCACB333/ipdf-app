@@ -9,7 +9,7 @@ struct UploadForm {
     file: TempFile,
 }
 
-#[post("/get-pages")]
+#[post("/pages/img")]
 pub async fn get_pages_img(
     MultipartForm(form): MultipartForm<UploadForm>,
 ) -> Result<impl Responder, Error> {

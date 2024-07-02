@@ -1,11 +1,10 @@
+use actix_cors::Cors;
 use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenvy::dotenv;
 use env_logger::Env;
 use ipdf::controllers::pdf;
 use log::info;
 use std::env;
-
-
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -21,6 +20,7 @@ async fn main() -> std::io::Result<()> {
         let api = web::scope("/api").service(pdf::routes());
         App::new()
             // .app_data(Data::new(pool.clone()))
+            .wrap(Cors::default().send_wildcard())
             .wrap(Logger::default())
             .service(api)
             .service(web::scope("").service(home_page))

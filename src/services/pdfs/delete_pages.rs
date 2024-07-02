@@ -10,7 +10,7 @@ struct UploadForm {
     pages: Text<String>,
 }
 
-#[post("/delete-pages")]
+#[post("/pages/delete")]
 pub async fn delete_pages(
     MultipartForm(form): MultipartForm<UploadForm>,
 ) -> Result<impl Responder, Error> {

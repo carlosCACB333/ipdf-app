@@ -4,7 +4,7 @@ use std::{io::Cursor, path::Path, vec};
 
 use super::pdfium::pdf_ngine;
 
-pub fn join_pdfs(paths: Vec<&Path>) -> Result<Vec<u8>, PdfiumError> {
+pub fn merge_pdfs(paths: Vec<&Path>) -> Result<Vec<u8>, PdfiumError> {
     let pdfium = pdf_ngine();
     let mut document = pdfium.create_new_pdf().unwrap();
 

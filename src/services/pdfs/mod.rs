@@ -1,3 +1,3 @@
-pub mod join;
-pub mod delete_page;
+pub mod merge;
+pub mod delete_pages;
 pub mod get_page_img;
