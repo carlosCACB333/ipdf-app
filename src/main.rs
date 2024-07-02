@@ -18,9 +18,15 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         info!("Starting server on port {}", port);
         let api = web::scope("/api").service(pdf::routes());
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header()
+            .max_age(3600);
+
         App::new()
             // .app_data(Data::new(pool.clone()))
-            .wrap(Cors::default().send_wildcard())
+            .wrap(cors)
             .wrap(Logger::default())
             .service(api)
             .service(web::scope("").service(home_page))
