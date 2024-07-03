@@ -4,7 +4,7 @@ use std::{io::Cursor, path::Path, vec};
 
 use super::pdfium::pdf_ngine;
 
-pub fn merge_pdfs(paths: Vec<&Path>) -> Result<Vec<u8>, PdfiumError> {
+pub fn merge_pdfs(paths: Vec<&Path>) -> Result<String, PdfiumError> {
     let pdfium = pdf_ngine();
     let mut document = pdfium.create_new_pdf().unwrap();
 
@@ -14,9 +14,13 @@ pub fn merge_pdfs(paths: Vec<&Path>) -> Result<Vec<u8>, PdfiumError> {
             .append(&pdfium.load_pdf_from_file(path, None).unwrap())
             .unwrap();
     }
-
-    let document = document.save_to_bytes().unwrap();
-    Ok(document)
+    let path = format!(
+        "uploads/{}.pdf",
+        chrono::Local::now().timestamp_micros()
+    );
+    document.save_to_file(&path).unwrap();
+    
+    Ok(path)
 }
 
 pub fn delete_pages(path: &Path, pages_num: Vec<u16>) -> Result<Vec<u8>, PdfiumError> {

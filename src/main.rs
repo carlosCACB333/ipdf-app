@@ -1,4 +1,5 @@
 use actix_cors::Cors;
+use actix_files::{self, Files};
 use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenvy::dotenv;
 use env_logger::Env;
@@ -28,6 +29,7 @@ async fn main() -> std::io::Result<()> {
             // .app_data(Data::new(pool.clone()))
             .wrap(cors)
             .wrap(Logger::default())
+            .service(Files::new("/uploads", "uploads").show_files_listing())
             .service(api)
             .service(web::scope("").service(home_page))
     })
