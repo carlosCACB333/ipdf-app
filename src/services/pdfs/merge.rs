@@ -15,5 +15,5 @@ pub async fn merge_pdfs(
 ) -> Result<impl Responder, Error> {
     let paths = form.files.iter().map(|file| file.file.path()).collect();
     let path = pdf::merge_pdfs(paths).unwrap();
-    Ok(make_response("SUCCED", json!({ "url": path })))
+    Ok(make_response("SUCCESS", json!({ "url": path })))
 }
