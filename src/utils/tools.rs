@@ -1,16 +1,29 @@
 use actix_web::HttpResponse;
+use serde::Serialize;
 
-pub fn make_response(status: &str, data: serde_json::Value) -> HttpResponse {
-    let mut response = serde_json::Map::new();
-    response.insert(
-        "status".to_string(),
-        serde_json::Value::String(status.to_string()),
-    );
-    response.insert("data".to_string(), data);
+#[derive(Serialize, Copy, Clone)]
+pub enum Status {
+    SUCCESS,
+    FAILED,
+}
+
+#[derive(Serialize)]
+pub struct Response<'a, T: Serialize> {
+    status: Status,
+
+    data: Option<T>,
+    message: &'a str,
+}
+
+pub fn make_res<T: Serialize>(status: Status, message: &str, data: T) -> HttpResponse {
+    let response = Response {
+        status,
+        message,
+        data: Some(data),
+    };
 
     match status {
-        "SUCCED" => HttpResponse::Ok().json(response),
-        "FAILED" => HttpResponse::BadRequest().json(response),
-        _ => HttpResponse::InternalServerError().json(response),
+        Status::SUCCESS => HttpResponse::Ok().json(response),
+        Status::FAILED => HttpResponse::BadRequest().json(response),
     }
 }

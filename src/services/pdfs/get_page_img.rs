@@ -1,19 +1,21 @@
-use crate::utils::pdf;
-use actix_multipart::form::{tempfile::TempFile, MultipartForm};
-use actix_web::{http::Error, post, HttpResponse, Responder};
-use std::path::Path;
+use std::{env, path::Path};
+use crate::{make_response, utils::pdf};
+use actix_web::{post, web, Responder};
 
-#[derive(Debug, MultipartForm)]
-struct UploadForm {
-    #[multipart()]
-    file: TempFile,
+#[derive(Debug, serde::Deserialize)]
+struct PagesImgReq {
+    url: String,
+    pages: Option<Vec<u16>>,
 }
 
-#[post("/pages/img")]
-pub async fn get_pages_img(
-    MultipartForm(form): MultipartForm<UploadForm>,
-) -> Result<impl Responder, Error> {
-    let path: &Path = form.file.file.path();
-    let img = pdf::page_to_img(path).unwrap();
-    Ok(HttpResponse::Ok().json(img))
+#[post("/pages/images")]
+pub async fn get_pages_img(body: web::Json<PagesImgReq>) -> impl Responder {
+    log::info!("Requesting pages images{:?}", body);
+    let base_url = env::var("APP_URL").unwrap();
+    let path = body.url.clone().replace(&format!("{}/", base_url), "");
+    let path: &Path = Path::new(&path);
+    let pages = body.pages.clone();
+    log::info!("Getting pages images: {:?} of file {:?}", pages, path);
+    let urls = pdf::page_to_img(path, pages);
+    make_response!(urls)
 }

@@ -1,13 +1,17 @@
 use actix_web::web;
 
 use crate::services::pdfs::{
-    delete_pages::delete_pages, get_page_img::get_pages_img, merge::merge_pdfs,
+    delete_pages::delete_pages,
+    get_page_img::get_pages_img,
+    merge::merge_pdfs,
+    upload::{delete_file, upload_files},
 };
 
 pub fn routes() -> actix_web::Scope {
-    let pdfs = web::scope("/pdf")
+    web::scope("/pdf")
         .service(merge_pdfs)
         .service(delete_pages)
-        .service(get_pages_img);
-    pdfs
+        .service(get_pages_img)
+        .service(upload_files)
+        .service(delete_file)
 }
