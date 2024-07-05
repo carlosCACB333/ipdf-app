@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, fs};
 
 use crate::{make_response, utils::tools::Status};
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
@@ -23,7 +23,8 @@ pub async fn upload_files(MultipartForm(form): MultipartForm<UploadForm>) -> imp
     let file = form.file.unwrap();
     let file_name = chrono::Local::now().timestamp_micros().to_string();
     let path = format!("uploads/{}.pdf", file_name);
-    file.file.persist(&path).unwrap();
+    fs::copy(file.file.path(), path.clone()).unwrap();
+    fs::remove_file(file.file.path()).unwrap_or_default();
     let base_url = env::var("APP_URL").unwrap();
     let url = format!("{}/{}", base_url, path);
 
