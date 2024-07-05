@@ -20,7 +20,7 @@ async fn main() -> std::io::Result<()> {
         info!("Starting server on port {}", port);
         let api = web::scope("/api").service(pdf::routes());
         let cors = Cors::default()
-            .allow_any_origin()
+            .allowed_origin("https://ipdf.lat")
             .allow_any_method()
             .allow_any_header()
             .max_age(3600);
