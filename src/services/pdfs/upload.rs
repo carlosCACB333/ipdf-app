@@ -3,6 +3,7 @@ use std::{env, fs};
 use crate::{make_response, utils::tools::Status};
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
 use actix_web::{delete, post, web::Path, Responder};
+use uuid::Uuid;
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
@@ -21,7 +22,7 @@ pub async fn upload_files(MultipartForm(form): MultipartForm<UploadForm>) -> imp
         return make_response!(Status::FAILED, "No hay archivo para subir");
     }
     let file = form.file.unwrap();
-    let file_name = chrono::Local::now().timestamp_micros().to_string();
+    let file_name = Uuid::new_v4();
     let path = format!("uploads/{}.pdf", file_name);
     fs::copy(file.file.path(), path.clone()).unwrap();
     fs::remove_file(file.file.path()).unwrap_or_default();
