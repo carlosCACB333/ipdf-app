@@ -1,6 +1,7 @@
 use pdfium_render::prelude::*;
-use std::{env, path::Path, vec};
+use std::{fs::File, io::copy, path::Path, vec};
 use uuid::Uuid;
+use zip::{write::SimpleFileOptions, ZipWriter};
 
 use super::pdfium::pdf_ngine;
 
@@ -33,7 +34,7 @@ pub fn delete_pages(path: &Path, pages_num: Vec<u16>) -> String {
     path
 }
 
-pub fn page_to_img(path: &Path, pages: Option<Vec<u16>>) -> Vec<String> {
+pub fn page_to_img(path: &Path, pages: Option<Vec<u16>>, config: &PdfRenderConfig) -> Vec<String> {
     let pdfium = pdf_ngine();
     let document = pdfium.load_pdf_from_file(path, None).unwrap();
 
@@ -42,23 +43,30 @@ pub fn page_to_img(path: &Path, pages: Option<Vec<u16>>) -> Vec<String> {
     let doc_pages = document.pages();
     for page in pages {
         let doc_page = doc_pages.get(page - 1).unwrap();
-        let image = doc_page
-            .render_with_config(
-                &PdfRenderConfig::new()
-                    .set_target_width(100)
-                    .set_target_height(141),
-            )
-            .unwrap()
-            .as_image();
+        let image = doc_page.render_with_config(config).unwrap().as_image();
 
         // let mut buffer = Cursor::new(Vec::new());
         // image.write_to(&mut buffer, ImageFormat::Png).unwrap();
 
         let path = format!("uploads/imgs/{}-{}.png", Uuid::new_v4(), page);
-        let base_url = env::var("APP_URL").unwrap();
+
         image.save(path.clone()).unwrap();
-        images.push(format!("{}/{}", base_url, path));
+        images.push(path);
     }
 
     images
+}
+
+pub fn create_zip(paths: Vec<String>) -> String {
+    let zip_path = format!("uploads/{}.zip", Uuid::new_v4());
+    let mut zip = ZipWriter::new(File::create(&zip_path).unwrap());
+    for path in paths {
+        let options = SimpleFileOptions::default();
+        let file_name = path.split('/').last().unwrap();
+        zip.start_file(file_name, options).unwrap();
+        let mut file = File::open(&path).unwrap();
+        copy(&mut file, &mut zip).unwrap();
+    }
+    zip.finish().unwrap();
+    zip_path
 }
