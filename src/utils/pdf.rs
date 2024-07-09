@@ -70,3 +70,15 @@ pub fn create_zip(paths: Vec<String>) -> String {
     zip.finish().unwrap();
     zip_path
 }
+
+pub fn extract_text(path: &str) -> String {
+    let pdfium = pdf_ngine();
+    let document = pdfium.load_pdf_from_file(path, None).unwrap();
+    let pages = document.pages();
+
+    let text = pages.iter().map(|page| {
+        return page.text().unwrap().all();
+    });
+
+    text.collect::<Vec<String>>().join("\n")
+}
