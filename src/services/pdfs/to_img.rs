@@ -22,7 +22,11 @@ pub async fn pdf_to_images(body: web::Json<PagesImgReq>) -> impl Responder {
     log::info!("Getting pages images of file {:?}", path);
     let config = &PdfRenderConfig::new();
     let urls = pdf::page_to_img(path, None, config);
-    let path = create_zip(urls);
+    let path = create_zip(urls.clone());
     let url = format!("{}/{}", base_url, path);
-    make_response!(json!({ "url": url}))
+    let urls = urls
+        .iter()
+        .map(|img| format!("{}/{}", base_url, img))
+        .collect::<Vec<String>>();
+    make_response!(json!({ "zip": url,"urls":urls}))
 }

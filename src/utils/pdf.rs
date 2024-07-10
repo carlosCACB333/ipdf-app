@@ -82,3 +82,23 @@ pub fn extract_text(path: &str) -> String {
 
     text.collect::<Vec<String>>().join("\n")
 }
+
+pub fn extract_images(path: &str) -> Vec<String> {
+    let pdfium = pdf_ngine();
+    let document = pdfium.load_pdf_from_file(path, None).unwrap();
+    let pages = document.pages();
+    let mut images = vec![];
+    pages.iter().for_each(|page| {
+        page.objects().iter().for_each(|object| {
+            if let Some(image) = object.as_image_object() {
+                if let Ok(image) = image.get_raw_image() {
+                    let path = format!("uploads/imgs/{}.png", Uuid::new_v4());
+                    image.save(path.clone()).unwrap();
+                    images.push(path);
+                }
+            }
+        });
+    });
+
+    images
+}

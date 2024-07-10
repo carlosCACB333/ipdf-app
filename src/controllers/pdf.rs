@@ -2,6 +2,7 @@ use actix_web::web;
 
 use crate::services::pdfs::{
     delete_pages::delete_pages,
+    get_images::pdf_get_images,
     get_page_img::get_pages_img,
     merge::merge_pdfs,
     to_img::pdf_to_images,
@@ -18,4 +19,5 @@ pub fn routes() -> actix_web::Scope {
         .service(delete_file)
         .service(pdf_to_images)
         .service(pdf_to_text)
+        .service(pdf_get_images)
 }
