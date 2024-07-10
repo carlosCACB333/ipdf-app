@@ -102,3 +102,18 @@ pub fn extract_images(path: &str) -> Vec<String> {
 
     images
 }
+
+pub fn create_pdf(text: &str) -> String {
+    let pdfium: Pdfium = pdf_ngine();
+    let mut document = pdfium.create_new_pdf().unwrap();
+    let mut page = document
+        .pages_mut()
+        .create_page_at_start(PdfPagePaperSize::a4())
+        .unwrap();
+    let font = document.fonts_mut().courier_bold();
+    let object = PdfPageTextObject::new(&document, text, font, PdfPoints::new(12.0)).unwrap();
+    page.objects_mut().add_text_object(object).unwrap();
+    let path = format!("uploads/{}.pdf", Uuid::new_v4());
+    document.save_to_file(&path).unwrap();
+    path
+}

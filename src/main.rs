@@ -3,6 +3,7 @@ use actix_files::{self, Files};
 use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenvy::dotenv;
 use env_logger::Env;
+use ipdf::controllers::app;
 use ipdf::controllers::pdf;
 use ipdf::utils::tools::delete_old_files;
 use std::env;
@@ -35,6 +36,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::default())
             .service(Files::new("/uploads", "uploads").show_files_listing())
+            .service(app::routes())
             .service(api)
             .service(web::scope("").service(home_page))
     })
