@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "APP_PORT=8080" >> .env
           echo "STAGE=production" >> .env
-          echo "APP_IMAGE=${{ secrets.DOCKERHUB_USER }}/ipdf:${{ steps.version.outputs.version }}" >> .env
+          echo "APP_IMAGE=${{ secrets.DOCKERHUB_USER }}/ipdf-app:${{ steps.version.outputs.version }}" >> .env
           cat .env
 
       - name: Login to Docker Hub
