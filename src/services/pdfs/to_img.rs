@@ -3,7 +3,7 @@ use crate::{
     utils::pdf::{self, create_zip},
 };
 use actix_web::{post, web, Responder};
-use pdfium_render::render_config::PdfRenderConfig;
+use pdfium_render::prelude::PdfRenderConfig;
 use serde_json::json;
 use std::{env, path::Path};
 

@@ -1,6 +1,6 @@
 use crate::{make_response, utils::pdf};
 use actix_web::{post, web, Responder};
-use pdfium_render::render_config::PdfRenderConfig;
+use pdfium_render::prelude::PdfRenderConfig;
 use std::{env, path::Path};
 
 #[derive(Debug, serde::Deserialize)]

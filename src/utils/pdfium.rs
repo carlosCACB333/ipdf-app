@@ -1,4 +1,4 @@
-use pdfium_render::pdfium::Pdfium;
+use pdfium_render::prelude::Pdfium;
 
 pub fn pdf_ngine() -> Pdfium {
     Pdfium::new(
